@@ -45,6 +45,13 @@ func ParseInt64(val interface{}) (int64, error) {
 		return v.Int(), nil
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return int64(v.Uint()), nil
+
+	case reflect.Float64, reflect.Float32:
+		number, err := strconv.ParseInt(fmt.Sprintf("%v", val), 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return number, nil
 	case reflect.String:
 		number, err := strconv.ParseInt(v.String(), 10, 64)
 		if err != nil {

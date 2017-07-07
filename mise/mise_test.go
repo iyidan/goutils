@@ -107,6 +107,8 @@ func TestParseInt64(t *testing.T) {
 		uint(v),
 		uint32(v),
 		v,
+		float64(v),
+		float32(v),
 	}
 
 	for _, val := range numberCases {
