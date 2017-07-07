@@ -126,4 +126,10 @@ func TestParseInt64(t *testing.T) {
 	if err == nil {
 		t.Fatal(`ParseInt64("fawef") test fail`)
 	}
+	t.Log(err)
+	_, err = ParseInt64(33.2)
+	if err == nil {
+		t.Fatal(`ParseInt64(33.2) test fail`)
+	}
+	t.Log(err)
 }

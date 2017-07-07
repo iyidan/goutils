@@ -47,9 +47,9 @@ func ParseInt64(val interface{}) (int64, error) {
 		return int64(v.Uint()), nil
 
 	case reflect.Float64, reflect.Float32:
-		number, err := strconv.ParseInt(fmt.Sprintf("%v", val), 10, 64)
-		if err != nil {
-			return 0, err
+		number := int64(v.Float())
+		if float64(number) != v.Float() {
+			return 0, fmt.Errorf("%#v parse int-like-value failed, number has the decimal part", val)
 		}
 		return number, nil
 	case reflect.String:
