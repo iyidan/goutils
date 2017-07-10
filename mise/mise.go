@@ -2,6 +2,7 @@ package mise
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 )
@@ -72,6 +73,15 @@ func ParseInt(val interface{}) (int, error) {
 	return int(v), nil
 }
 
+// ParseUint similar as ParseInt64() function
+func ParseUint(val interface{}) (uint, error) {
+	v, err := ParseInt64(val)
+	if err != nil {
+		return 0, err
+	}
+	return uint(v), nil
+}
+
 // ParseBool parse any bool-like-value into bool type
 func ParseBool(val interface{}) (bool, error) {
 	v, kd := GetValueKind(val)
@@ -105,4 +115,15 @@ func ParseBool(val interface{}) (bool, error) {
 		}
 	}
 	return false, fmt.Errorf("%#v parse bool failed", val)
+}
+
+// Round a float number to int
+func Round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
+
+// ToFixed fix a floatnum with the given precision (round)
+func ToFixed(num float64, precision int) float64 {
+	output := math.Pow(10, float64(precision))
+	return float64(Round(num*output)) / output
 }
