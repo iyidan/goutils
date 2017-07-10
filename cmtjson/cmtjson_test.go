@@ -130,10 +130,16 @@ func TestParseFromBytes(t *testing.T) {
 }
 
 func BenchmarkParseFromBytes(b *testing.B) {
+	b.StopTimer()
+	cases := make(map[string][]byte)
+	for k, v := range testCases {
+		cases[k] = []byte(v)
+	}
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		for _, cs := range testCases {
+		for _, cs := range cases {
 			dt := testData{}
-			err := ParseFromBytes([]byte(cs), &dt)
+			err := ParseFromBytes(cs, &dt)
 			if err != nil {
 				b.Fatal(err)
 			}

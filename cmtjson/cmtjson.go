@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	btSpace     byte = ' '
 	btStar      byte = '*'
 	btSharp     byte = '#'
 	btDbQuote   byte = '"'
@@ -34,12 +35,10 @@ func newStore(probableSize int) (storer, error) {
 func RemoveJSONCommentBytes(data []byte) []byte {
 	var (
 		prev byte
-		buf  = &bytes.Buffer{}
 
 		inSharpCmt, inSlashCmt, inBlockCmt, inJSONStr bool
 	)
 	for i := 0; i < len(data); i++ {
-		// skip until meet the '\n' char
 		wt := false
 		reset := false
 		switch {
@@ -73,8 +72,8 @@ func RemoveJSONCommentBytes(data []byte) []byte {
 			}
 		}
 		// write byte
-		if wt && prev > 0 {
-			buf.WriteByte(prev)
+		if i > 0 && (!wt || prev == 0) {
+			data[i-1] = btSpace
 		}
 		// block comment need reset last byte to zero
 		if reset {
@@ -85,11 +84,10 @@ func RemoveJSONCommentBytes(data []byte) []byte {
 	}
 
 	// write last byte
-	if !inSharpCmt && !inSlashCmt && !inBlockCmt && prev > 0 {
-		buf.WriteByte(prev)
+	if inSharpCmt || inSlashCmt || inBlockCmt || prev == 0 {
+		data[len(data)-1] = btSpace
 	}
-
-	return buf.Bytes()
+	return data
 }
 
 // RemoveJSONComment remove comment from r which contains json data
@@ -117,7 +115,6 @@ func RemoveJSONComment(r io.Reader, probableSize int) (io.ReadCloser, error) {
 		}
 
 		for i := 0; i < n; i++ {
-			// skip until meet the '\n' char
 			wt := false
 			reset := false
 			switch {
@@ -206,7 +203,7 @@ func ParseFromReader(r io.Reader, v interface{}, probableSize int) error {
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(d, &v)
+	err = json.Unmarshal(d, v)
 	if err != nil {
 		return err
 	}
@@ -241,7 +238,7 @@ func ParseFromFile(filename string, v interface{}) error {
 // ParseFromBytes parse the json data with comment from given data
 // use RemoveJSONCommentBytes to improve performance
 func ParseFromBytes(data []byte, v interface{}) error {
-	return json.Unmarshal(RemoveJSONCommentBytes(data), &v)
+	return json.Unmarshal(RemoveJSONCommentBytes(data), v)
 	//return ParseFromReader(bytes.NewReader(data), v, len(data))
 }
 
