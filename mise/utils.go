@@ -3,8 +3,6 @@ package mise
 import (
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"runtime/debug"
 	"strings"
 )
@@ -86,13 +84,4 @@ func WrapErrorNo(err error, errmsg string, errno int) error {
 		return &WrapperError{prev: err, Errmsg: errmsg, Errno: errno}
 	}
 	return nil
-}
-
-// GetRootPath get current cmd path
-func GetRootPath() string {
-	p, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		panic(err)
-	}
-	return p
 }
