@@ -17,6 +17,14 @@ func FailOnError(err error, msg string) {
 	}
 }
 
+// PanicOnError log stack and panic with given message
+func PanicOnError(err error, msg string) {
+	if err != nil {
+		stack := debug.Stack()
+		log.Panicf("%s: %s - stack:\n%s", msg, err, stack)
+	}
+}
+
 // WrapErrorMsg wrap a error with given message
 func WrapErrorMsg(err error, msg string) error {
 	if err != nil {
